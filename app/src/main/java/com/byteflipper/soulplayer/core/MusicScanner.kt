@@ -1,4 +1,3 @@
-// MusicScanner.kt
 package com.byteflipper.soulplayer.core
 
 import android.content.Context
@@ -13,8 +12,6 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
-import java.io.InputStream
-import java.lang.IllegalArgumentException
 
 data class MusicTrack(
     val data: String,
@@ -29,18 +26,17 @@ data class MusicTrack(
 class MusicScanner(private val context: Context) {
 
     private val SUPPORTED_MIME_TYPES = arrayOf(
-        "audio/mpeg", // MP3
-        "audio/aac", // AAC
-        "audio/x-flac", // FLAC
-        "audio/ogg",   // OGG
-        "audio/opus", // Opus
-        "audio/x-wav", // WAV
+        "audio/mpeg",
+        "audio/aac",
+        "audio/x-flac",
+        "audio/ogg",
+        "audio/opus",
+        "audio/x-wav",
     )
 
     suspend fun scanMusic(): List<MusicTrack> = withContext(Dispatchers.IO) {
         val musicList = mutableListOf<MusicTrack>()
         val uri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-
         val projection = arrayOf(
             MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.TITLE,
@@ -72,6 +68,7 @@ class MusicScanner(private val context: Context) {
                 val albumIndex = it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
                 val durationIndex = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
                 val idIndex = it.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+
                 while (it.moveToNext()) {
                     val track = MusicTrack(
                         data = it.getString(dataIndex),
@@ -84,7 +81,7 @@ class MusicScanner(private val context: Context) {
                     )
                     musicList.add(track)
                 }
-            } catch (e: IllegalArgumentException){
+            } catch (e: IllegalArgumentException) {
                 Log.e("MusicScanner", "Error reading column", e)
             }
         }
@@ -92,19 +89,23 @@ class MusicScanner(private val context: Context) {
     }
 
     private fun loadCover(path: String): Bitmap? {
+        var retriever: MediaMetadataRetriever? = null
         try {
-            val retriever = MediaMetadataRetriever()
+            retriever = MediaMetadataRetriever()
             retriever.setDataSource(path)
             val coverBytes = retriever.embeddedPicture
-            retriever.release()
             return if (coverBytes != null){
                 val inputStream = ByteArrayInputStream(coverBytes)
                 BitmapFactory.decodeStream(inputStream)
-            } else null
+            } else {
+                null
+            }
 
         } catch (e: Exception){
             Log.e("MusicScanner", "Error loading cover", e)
             return null
+        } finally {
+            retriever?.release()
         }
     }
 }

@@ -1,6 +1,4 @@
-// SettingsScreen.kt
-
-package com.byteflipper.soulplayer.ui.screens
+package com.byteflipper.soulplayer.ui.screens.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.RadioButton
@@ -28,22 +25,23 @@ import com.byteflipper.soulplayer.viewmodel.AppViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(){
+fun SettingsScreen() {
     val context = LocalContext.current
     val viewModel: AppViewModel = viewModel(factory = AppViewModel.AppViewModelFactory(context.applicationContext as android.app.Application))
     val theme = viewModel.theme.collectAsState()
     val dynamicColor = viewModel.dynamicColor.collectAsState()
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Settings", color = Color.White) },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Transparent
-                ),
+                )
             )
         }
-    ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
+    ) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
             Text("Theme Settings")
             Row (verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(selected = theme.value == "system", onClick = { viewModel.setTheme("system") })

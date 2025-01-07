@@ -36,7 +36,6 @@ class MusicPlaybackService : MediaSessionService() {
         return mediaSession
     }
 
-
     override fun onDestroy() {
         mediaSession?.run {
             player.release()
@@ -45,33 +44,35 @@ class MusicPlaybackService : MediaSessionService() {
         }
         super.onDestroy()
     }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         return START_NOT_STICKY
     }
 
-    fun setMedia(uri: String) {
-        val mediaItem = MediaItem.fromUri(uri)
-        player.setMediaItem(mediaItem)
-        player.prepare()
-    }
+    // Use mediaController for playback control
+//    fun setMedia(uri: String) {
+//        val mediaItem = MediaItem.fromUri(uri)
+//        player.setMediaItem(mediaItem)
+//        player.prepare()
+//    }
 
-    fun play() {
-        player.play()
-    }
+//    fun play() {
+//        player.play()
+//    }
 
-    fun pause() {
-        player.pause()
-    }
+//    fun pause() {
+//        player.pause()
+//    }
 
-    fun stop() {
-        player.stop()
-        player.seekTo(0)
-    }
+//    fun stop() {
+//        player.stop()
+//        player.seekTo(0)
+//    }
 
-    fun setPlaylist(uris: List<String>) {
-        val mediaItems = uris.map { MediaItem.fromUri(it) }
-        player.setMediaItems(mediaItems)
-        player.prepare()
-    }
+//    fun setPlaylist(uris: List<String>) {
+//        val mediaItems = uris.map { MediaItem.fromUri(it) }
+//        player.setMediaItems(mediaItems)
+//        player.prepare()
+//    }
 }

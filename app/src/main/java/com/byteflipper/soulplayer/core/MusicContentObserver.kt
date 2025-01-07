@@ -1,4 +1,3 @@
-// MusicContentObserver.kt
 package com.byteflipper.soulplayer.core
 
 import android.content.Context
@@ -23,7 +22,8 @@ class MusicContentObserver(
     fun startWatching() {
         context.contentResolver.registerContentObserver(uri, true, this)
     }
-    fun stopWatching(){
+
+    fun stopWatching() {
         context.contentResolver.unregisterContentObserver(this)
     }
 }

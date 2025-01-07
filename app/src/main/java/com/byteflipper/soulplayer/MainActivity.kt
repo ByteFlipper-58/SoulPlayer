@@ -31,18 +31,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val viewModel: AppViewModel = viewModel(factory = AppViewModel.AppViewModelFactory(application))
-            val theme = viewModel.theme.collectAsState()
-            val dynamicColor = viewModel.dynamicColor.collectAsState()
+            val theme by viewModel.theme.collectAsState()
+            val dynamicColor by viewModel.dynamicColor.collectAsState()
             val context = LocalContext.current
 
             SoulPlayerTheme(
-                dynamicColor = dynamicColor.value,
-                darkTheme = when(theme.value){
+                dynamicColor = dynamicColor,
+                darkTheme = when(theme){
                     "system" -> isSystemInDarkTheme()
                     "light" -> false
                     "dark" -> true
                     else -> false
-                }) {
+                }
+            ) {
                 val navController = rememberNavController()
                 val backgroundColor = MaterialTheme.colorScheme.background
                 val animatedBackgroundColor by animateColorAsState(
@@ -53,10 +54,11 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = animatedBackgroundColor) {
                     Scaffold(
                         bottomBar = { BottomNavigationBar(navController = navController) }
-                    ) {
-                        Column(modifier = Modifier
-                            .padding(it)
-                            .fillMaxSize()
+                    ) { innerPadding ->
+                        Column(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .fillMaxSize()
                         ) {
                             AppNavigation(navController = navController)
                         }

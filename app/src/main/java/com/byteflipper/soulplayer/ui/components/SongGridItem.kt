@@ -1,4 +1,3 @@
-// SongGridItem.kt
 package com.byteflipper.soulplayer.ui.components
 
 import androidx.compose.foundation.Image

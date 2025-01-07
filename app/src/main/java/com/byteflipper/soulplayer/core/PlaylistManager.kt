@@ -14,7 +14,8 @@ class PlaylistManager {
     }
 
     fun nextTrack(): MusicTrack? {
-        if (playlist.isNotEmpty() && currentIndex < playlist.size - 1) {
+        if(playlist.isNotEmpty() && currentIndex < playlist.size-1)
+        {
             currentIndex++
         }
         return playlist.getOrNull(currentIndex)

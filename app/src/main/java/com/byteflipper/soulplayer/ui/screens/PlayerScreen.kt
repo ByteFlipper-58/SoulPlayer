@@ -1,8 +1,6 @@
-//PlayerScreen.kt
 package com.byteflipper.soulplayer.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,13 +53,12 @@ import kotlinx.coroutines.launch
 fun PlayerScreen(navController: NavHostController){
     val context = LocalContext.current
     val viewModel: AppViewModel = viewModel(factory = AppViewModel.AppViewModelFactory(context.applicationContext as android.app.Application))
-
-    val musicPlayerCore = remember { MusicPlayerCore(context = context) }
+    val musicPlayerCore = remember { MusicPlayerCore(context) }
     val progressManager = remember { ProgressManager(musicPlayerCore) }
+
     var currentProgress by remember { mutableStateOf(0f) }
-    val isPlaying = remember{ mutableStateOf(false) }
+    val isPlaying = remember { mutableStateOf(false) }
     val currentTrack = remember { mutableStateOf(musicPlayerCore.playlistManager.getCurrentTrack()) }
-    var showMenu by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
 
@@ -70,6 +67,7 @@ fun PlayerScreen(navController: NavHostController){
             musicPlayerCore.release()
         }
     }
+
     LaunchedEffect(musicPlayerCore.isPlaying()) {
         isPlaying.value = musicPlayerCore.isPlaying()
     }
@@ -80,17 +78,14 @@ fun PlayerScreen(navController: NavHostController){
                 title = { Text(currentTrack.value?.title ?: "No track", color = Color.White) },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Transparent
-                ),
-                actions = {
-
-                }
+                )
             )
         }
-    ) { paddingValues ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(innerPadding),  // Apply padding from the Scaffold
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -106,18 +101,18 @@ fun PlayerScreen(navController: NavHostController){
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = currentTrack.value?.artist ?: "Unknown Artist", color = Color.White)
             Spacer(modifier = Modifier.height(32.dp))
-
-            Slider(value = currentProgress, onValueChange = {
-                currentProgress = it
-                progressManager.seekTo(it)
-            },
+            Slider(
+                value = currentProgress,
+                onValueChange = {
+                    currentProgress = it
+                    progressManager.seekTo(it)
+                },
                 onValueChangeFinished = {
                     isPlaying.value = musicPlayerCore.isPlaying()
                 },
                 modifier = Modifier.fillMaxWidth(0.9f),
             )
             Spacer(modifier = Modifier.height(8.dp))
-
             Row (verticalAlignment = Alignment.CenterVertically){
                 Text(
                     text = formatDuration(musicPlayerCore.getCurrentPosition()/1_000),
@@ -130,19 +125,18 @@ fun PlayerScreen(navController: NavHostController){
                 )
             }
 
-
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
-                            musicPlayerCore.playlistManager.previousTrack()?.let{
+                            musicPlayerCore.playlistManager.previousTrack()?.let {
                                 musicPlayerCore.setMedia(it)
                                 currentTrack.value = it
                             }
                         }
                     }
-                ){
+                ) {
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowLeft,
                         contentDescription = "Previous",
@@ -153,7 +147,7 @@ fun PlayerScreen(navController: NavHostController){
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
-                            if(musicPlayerCore.isPlaying()){
+                            if (musicPlayerCore.isPlaying()) {
                                 musicPlayerCore.pause()
                                 isPlaying.value = musicPlayerCore.isPlaying()
                             } else {
@@ -173,14 +167,13 @@ fun PlayerScreen(navController: NavHostController){
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
-                            musicPlayerCore.playlistManager.nextTrack()?.let{
+                            musicPlayerCore.playlistManager.nextTrack()?.let {
                                 musicPlayerCore.setMedia(it)
                                 currentTrack.value = it
                             }
                         }
-
                     }
-                ){
+                ) {
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowRight,
                         contentDescription = "Next",
@@ -190,8 +183,9 @@ fun PlayerScreen(navController: NavHostController){
                 }
             }
         }
+
         LaunchedEffect(Unit) {
-            while (true){
+            while (true) {
                 currentProgress = progressManager.getProgress()
                 kotlinx.coroutines.delay(500)
             }

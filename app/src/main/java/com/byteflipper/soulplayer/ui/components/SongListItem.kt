@@ -1,4 +1,3 @@
-// SongListItem.kt
 package com.byteflipper.soulplayer.ui.components
 
 import androidx.compose.animation.core.LinearEasing
@@ -30,7 +29,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.unit.IntSize
 import com.byteflipper.soulplayer.core.MusicTrack
 import androidx.compose.runtime.getValue
 

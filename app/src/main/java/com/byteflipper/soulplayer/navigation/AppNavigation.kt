@@ -6,8 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.byteflipper.soulplayer.ui.screens.DashboardScreen
 import com.byteflipper.soulplayer.ui.screens.PlayerScreen
-import com.byteflipper.soulplayer.ui.screens.SettingsScreen
 import com.byteflipper.soulplayer.ui.screens.SongsScreen
+import com.byteflipper.soulplayer.ui.screens.settings.SettingsScreen
 
 sealed class Screen(val route: String) {
     object Dashboard : Screen("dashboard")

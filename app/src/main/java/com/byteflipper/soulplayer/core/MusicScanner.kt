@@ -3,12 +3,17 @@ package com.byteflipper.soulplayer.core
 
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayInputStream
+import java.io.InputStream
 import java.lang.IllegalArgumentException
 
 data class MusicTrack(
@@ -17,8 +22,8 @@ data class MusicTrack(
     val artist: String,
     val album: String,
     val duration: Long,
-    val id: Long
-    // Другие поля по желанию
+    val id: Long,
+    val cover: Bitmap? = null
 )
 
 class MusicScanner(private val context: Context) {
@@ -74,7 +79,8 @@ class MusicScanner(private val context: Context) {
                         artist = it.getString(artistIndex) ?: "Unknown Artist",
                         album = it.getString(albumIndex) ?: "Unknown Album",
                         duration = it.getLong(durationIndex),
-                        id = it.getLong(idIndex)
+                        id = it.getLong(idIndex),
+                        cover = loadCover(it.getString(dataIndex))
                     )
                     musicList.add(track)
                 }
@@ -83,5 +89,22 @@ class MusicScanner(private val context: Context) {
             }
         }
         return@withContext musicList
+    }
+
+    private fun loadCover(path: String): Bitmap? {
+        try {
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(path)
+            val coverBytes = retriever.embeddedPicture
+            retriever.release()
+            return if (coverBytes != null){
+                val inputStream = ByteArrayInputStream(coverBytes)
+                BitmapFactory.decodeStream(inputStream)
+            } else null
+
+        } catch (e: Exception){
+            Log.e("MusicScanner", "Error loading cover", e)
+            return null
+        }
     }
 }

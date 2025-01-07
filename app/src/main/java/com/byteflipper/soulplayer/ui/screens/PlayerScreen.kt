@@ -46,6 +46,9 @@ import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.byteflipper.soulplayer.viewmodel.AppViewModel
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +62,8 @@ fun PlayerScreen(navController: NavHostController){
     val isPlaying = remember{ mutableStateOf(false) }
     val currentTrack = remember { mutableStateOf(musicPlayerCore.playlistManager.getCurrentTrack()) }
     var showMenu by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
 
     DisposableEffect(Unit) {
         onDispose {
@@ -130,9 +135,11 @@ fun PlayerScreen(navController: NavHostController){
             Row {
                 IconButton(
                     onClick = {
-                        musicPlayerCore.playlistManager.previousTrack()?.let{
-                            musicPlayerCore.setMedia(it)
-                            currentTrack.value = it
+                        coroutineScope.launch {
+                            musicPlayerCore.playlistManager.previousTrack()?.let{
+                                musicPlayerCore.setMedia(it)
+                                currentTrack.value = it
+                            }
                         }
                     }
                 ){
@@ -145,12 +152,14 @@ fun PlayerScreen(navController: NavHostController){
                 }
                 IconButton(
                     onClick = {
-                        if(musicPlayerCore.isPlaying()){
-                            musicPlayerCore.pause()
-                            isPlaying.value = musicPlayerCore.isPlaying()
-                        } else {
-                            musicPlayerCore.play()
-                            isPlaying.value = musicPlayerCore.isPlaying()
+                        coroutineScope.launch {
+                            if(musicPlayerCore.isPlaying()){
+                                musicPlayerCore.pause()
+                                isPlaying.value = musicPlayerCore.isPlaying()
+                            } else {
+                                musicPlayerCore.play()
+                                isPlaying.value = musicPlayerCore.isPlaying()
+                            }
                         }
                     }
                 ) {
@@ -163,10 +172,13 @@ fun PlayerScreen(navController: NavHostController){
                 }
                 IconButton(
                     onClick = {
-                        musicPlayerCore.playlistManager.nextTrack()?.let{
-                            musicPlayerCore.setMedia(it)
-                            currentTrack.value = it
+                        coroutineScope.launch {
+                            musicPlayerCore.playlistManager.nextTrack()?.let{
+                                musicPlayerCore.setMedia(it)
+                                currentTrack.value = it
+                            }
                         }
+
                     }
                 ){
                     Icon(

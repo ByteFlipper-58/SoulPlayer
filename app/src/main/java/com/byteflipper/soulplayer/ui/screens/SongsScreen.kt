@@ -119,15 +119,19 @@ fun SongsScreen(navController: NavHostController) {
 
                     }, label = "layout_animation"
                 ) { targetState ->
-                    if(targetState) {
-                        SongList(tracks = tracks, onClick = {
-                            musicPlayerCore.setMedia(it)
-                            navController.navigate(Screen.Player.route)
+                    if (targetState) {
+                        SongList(tracks = tracks, onClick = { track ->
+                            coroutineScope.launch {
+                                musicPlayerCore.setMedia(track)
+                                navController.navigate(Screen.Player.route)
+                            }
                         })
                     } else {
-                        SongGrid(tracks = tracks,  onClick = {
-                            musicPlayerCore.setMedia(it)
-                            navController.navigate(Screen.Player.route)
+                        SongGrid(tracks = tracks, onClick = { track ->
+                            coroutineScope.launch {
+                                musicPlayerCore.setMedia(track)
+                                navController.navigate(Screen.Player.route)
+                            }
                         })
                     }
                 }
@@ -136,21 +140,22 @@ fun SongsScreen(navController: NavHostController) {
     }
 }
 @Composable
-fun SongList(tracks: List<MusicTrack>, onClick:(MusicTrack) -> Unit){
+fun SongList(tracks: List<MusicTrack>, onClick: (MusicTrack) -> Unit) {
     LazyColumn {
         items(tracks) { track ->
-            SongListItem(track = track, onClick = onClick)
+            SongListItem(track = track, onClick = { onClick(track) })
         }
     }
 }
+
 @Composable
-fun SongGrid(tracks: List<MusicTrack>, onClick:(MusicTrack) -> Unit) {
+fun SongGrid(tracks: List<MusicTrack>, onClick: (MusicTrack) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 180.dp),
         contentPadding = PaddingValues(horizontal = 4.dp),
     ) {
         items(tracks) { track ->
-            SongGridItem(track = track, onClick = onClick)
+            SongGridItem(track = track, onClick = { onClick(track) })
         }
     }
 }

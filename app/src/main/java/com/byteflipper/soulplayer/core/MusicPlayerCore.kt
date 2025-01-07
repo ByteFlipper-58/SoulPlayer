@@ -1,62 +1,129 @@
 package com.byteflipper.soulplayer.core
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.os.IBinder
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.session.MediaController
+import androidx.media3.session.MediaSessionService
+import androidx.media3.session.SessionToken
+import android.content.ServiceConnection
+import android.util.Log
+import java.util.concurrent.Executors
 
-class MusicPlayerCore(context: Context) {
-    private val player: ExoPlayer = ExoPlayer.Builder(context).build()
-    private val playlistManager = PlaylistManager()
-    private var isMediaPrepared = false
+class MusicPlayerCore(private val context: Context) {
+    private val sessionToken = SessionToken(context, ComponentName(context, MusicPlaybackService::class.java))
+    private var mediaController: MediaController? = null
+    private var serviceBound = false
+
+    private val controllerConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val controllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
+
+            controllerFuture.addListener(
+                {
+                    try {
+                        mediaController = controllerFuture.get()
+                        serviceBound = true
+                    } catch (e: Exception) {
+                        Log.e("MusicPlayerCore", "Error getting controller", e)
+                    }
+                },
+                Executors.newSingleThreadExecutor()
+            )
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            mediaController = null
+            serviceBound = false
+        }
+    }
+
+    init {
+        val serviceIntent = Intent(context, MusicPlaybackService::class.java)
+        context.startService(serviceIntent)
+        context.bindService(serviceIntent, controllerConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    val playlistManager = PlaylistManager()
 
     fun setMedia(track: MusicTrack) {
-        val mediaItem = MediaItem.fromUri(track.data)
-        player.setMediaItem(mediaItem)
-        player.prepare()
-        isMediaPrepared = true
+        try {
+            val mediaItem = MediaItem.fromUri(track.data)
+            mediaController?.run {
+                setMediaItem(mediaItem)
+                prepare()
+            } ?: Log.e("MusicPlayerCore", "MediaController is null")
+        } catch (e: Exception) {
+            Log.e("MusicPlayerCore", "Error setting media", e)
+        }
     }
 
     @JvmName("setPlaylistTracks")
     fun setPlaylist(tracks: List<MusicTrack>) {
-        val mediaItems = tracks.map { MediaItem.fromUri(it.data) }
-        player.setMediaItems(mediaItems)
-        player.prepare()
-        isMediaPrepared = true
+        val uris = tracks.map { it.data }
+        setPlaylist(uris)
     }
 
     @JvmName("setPlaylistUris")
     fun setPlaylist(uris: List<String>) {
-        val mediaItems = uris.map { MediaItem.fromUri(it) }
-        player.setMediaItems(mediaItems)
-        player.prepare()
-        isMediaPrepared = true
+        try {
+            val mediaItems = uris.map { MediaItem.fromUri(it) }
+            mediaController?.run {
+                setMediaItems(mediaItems)
+                prepare()
+            } ?: Log.e("MusicPlayerCore", "MediaController is null")
+        } catch (e: Exception) {
+            Log.e("MusicPlayerCore", "Error setting playlist", e)
+        }
     }
 
     fun play() {
-        if (isMediaPrepared) {
-            player.play()
-        } else {
-            println("Media is not prepared. Call setMedia or setPlaylist first.")
+        try {
+            mediaController?.play() ?: Log.e("MusicPlayerCore", "MediaController is null")
+        } catch (e: Exception) {
+            Log.e("MusicPlayerCore", "Error playing", e)
         }
     }
 
     fun pause() {
-        player.pause()
+        mediaController?.pause()
     }
 
     fun stop() {
-        player.stop()
-        player.seekTo(0)
+        mediaController?.stop()
         playlistManager.nextTrack()?.let { setMedia(it) }
     }
 
+    fun seekTo(position: Long) {
+        mediaController?.seekTo(position)
+    }
+
     fun release() {
-        player.release()
+        if (serviceBound) {
+            try {
+                context.unbindService(controllerConnection)
+            } catch (e: Exception) {
+                Log.e("MusicPlayerCore", "Error unbinding service", e)
+            }
+            serviceBound = false
+        }
+        mediaController?.release()
+        mediaController = null
         playlistManager.clearPlaylist()
-        isMediaPrepared = false
     }
 
     fun isPlaying(): Boolean {
-        return player.isPlaying
+        return mediaController?.isPlaying ?: false
+    }
+
+    fun getCurrentPosition(): Long {
+        return mediaController?.currentPosition ?: 0L
+    }
+
+    fun getDuration(): Long {
+        return mediaController?.duration ?: 0L
     }
 }

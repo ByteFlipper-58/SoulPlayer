@@ -1,6 +1,8 @@
+// SongGridItem.kt
 package com.byteflipper.soulplayer.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,11 +25,12 @@ import com.byteflipper.soulplayer.core.MusicTrack
 
 
 @Composable
-fun SongGridItem(track: MusicTrack) {
+fun SongGridItem(track: MusicTrack, onClick:(MusicTrack) -> Unit) {
     Card(
         modifier = Modifier
             .padding(4.dp)
-            .aspectRatio(1f),
+            .aspectRatio(1f)
+            .clickable { onClick(track) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {

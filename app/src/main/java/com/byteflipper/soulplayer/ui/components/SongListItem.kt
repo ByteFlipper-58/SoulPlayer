@@ -1,3 +1,4 @@
+// SongListItem.kt
 package com.byteflipper.soulplayer.ui.components
 
 import androidx.compose.animation.core.LinearEasing
@@ -7,6 +8,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,9 +35,11 @@ import com.byteflipper.soulplayer.core.MusicTrack
 import androidx.compose.runtime.getValue
 
 @Composable
-fun SongListItem(track: MusicTrack) {
+fun SongListItem(track: MusicTrack, onClick:(MusicTrack) -> Unit) {
     Card(
-        modifier = Modifier.padding(4.dp),
+        modifier = Modifier
+            .padding(4.dp)
+            .clickable { onClick(track) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -90,12 +94,4 @@ fun ScrollingText(text: String, color: Color) {
             }
         }
     }
-}
-
-
-private fun formatDuration(durationMillis: Long): String {
-    val totalSeconds = durationMillis / 1000
-    val minutes = totalSeconds / 60
-    val seconds = totalSeconds % 60
-    return String.format("%02d:%02d", minutes, seconds)
 }

@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -49,22 +50,28 @@ import com.byteflipper.soulplayer.ui.components.SongListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.byteflipper.soulplayer.core.MusicPlayerCore
+import com.byteflipper.soulplayer.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun SongsScreen(navController: NavHostController) {
     val context = LocalContext.current
+
     var showMenu by remember { mutableStateOf(false) }
     var isListMode by remember { mutableStateOf(true) }
     val scanner = remember { MusicScanner(context = context) }
     val coroutineScope = rememberCoroutineScope()
     val tracks = remember { mutableStateListOf<MusicTrack>() }
+    val musicPlayerCore = remember { MusicPlayerCore(context = context) }
 
     DisposableEffect(Unit) {
         coroutineScope.launch {
             scanMusicAndUpdateList(scanner, tracks)
         }
-        onDispose {}
+        onDispose {
+            musicPlayerCore.release()
+        }
     }
 
     Scaffold(
@@ -113,9 +120,15 @@ fun SongsScreen(navController: NavHostController) {
                     }, label = "layout_animation"
                 ) { targetState ->
                     if(targetState) {
-                        SongList(tracks = tracks)
+                        SongList(tracks = tracks, onClick = {
+                            musicPlayerCore.setMedia(it)
+                            navController.navigate(Screen.Player.route)
+                        })
                     } else {
-                        SongGrid(tracks = tracks)
+                        SongGrid(tracks = tracks,  onClick = {
+                            musicPlayerCore.setMedia(it)
+                            navController.navigate(Screen.Player.route)
+                        })
                     }
                 }
             }
@@ -123,21 +136,21 @@ fun SongsScreen(navController: NavHostController) {
     }
 }
 @Composable
-fun SongList(tracks: List<MusicTrack>){
+fun SongList(tracks: List<MusicTrack>, onClick:(MusicTrack) -> Unit){
     LazyColumn {
         items(tracks) { track ->
-            SongListItem(track = track)
+            SongListItem(track = track, onClick = onClick)
         }
     }
 }
 @Composable
-fun SongGrid(tracks: List<MusicTrack>) {
+fun SongGrid(tracks: List<MusicTrack>, onClick:(MusicTrack) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 180.dp),
         contentPadding = PaddingValues(horizontal = 4.dp),
     ) {
         items(tracks) { track ->
-            SongGridItem(track = track)
+            SongGridItem(track = track, onClick = onClick)
         }
     }
 }

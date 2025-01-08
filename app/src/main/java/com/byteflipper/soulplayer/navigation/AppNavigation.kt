@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.byteflipper.soulplayer.ui.screens.DashboardScreen
 import com.byteflipper.soulplayer.ui.screens.PlayerScreen
 import com.byteflipper.soulplayer.ui.screens.SongsScreen
+import com.byteflipper.soulplayer.core.MusicPlayerCore
 import com.byteflipper.soulplayer.ui.screens.settings.SettingsScreen
 
 sealed class Screen(val route: String) {
@@ -17,19 +18,19 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController, musicPlayerCore: MusicPlayerCore) {
     NavHost(navController = navController, startDestination = Screen.Dashboard.route) {
         composable(Screen.Dashboard.route) {
             DashboardScreen(navController = navController)
         }
         composable(Screen.Songs.route) {
-            SongsScreen(navController = navController)
+            SongsScreen(navController = navController, musicPlayerCore = musicPlayerCore)
         }
         composable(Screen.Settings.route) {
             SettingsScreen()
         }
         composable(Screen.Player.route) {
-            PlayerScreen(navController = navController)
+            PlayerScreen(navController = navController, musicPlayerCore = musicPlayerCore)
         }
     }
 }

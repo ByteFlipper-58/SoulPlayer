@@ -42,7 +42,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.byteflipper.soulplayer.viewmodel.AppViewModel
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
@@ -50,10 +49,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerScreen(navController: NavHostController){
+fun PlayerScreen(navController: NavHostController, musicPlayerCore: MusicPlayerCore){
     val context = LocalContext.current
-    val viewModel: AppViewModel = viewModel(factory = AppViewModel.AppViewModelFactory(context.applicationContext as android.app.Application))
-    val musicPlayerCore = remember { MusicPlayerCore(context) }
     val progressManager = remember { ProgressManager(musicPlayerCore) }
     var isControllerReady by remember { mutableStateOf(false) }
 
@@ -64,11 +61,11 @@ fun PlayerScreen(navController: NavHostController){
 
 
     DisposableEffect(Unit) {
-        musicPlayerCore.controllerReadyCallback = {
-            isControllerReady = true
-        }
         onDispose {
             musicPlayerCore.release()
+        }
+        musicPlayerCore.controllerReadyCallback = {
+            isControllerReady = true
         }
     }
 

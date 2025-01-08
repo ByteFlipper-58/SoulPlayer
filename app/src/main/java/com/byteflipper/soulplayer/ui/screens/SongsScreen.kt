@@ -55,29 +55,29 @@ import android.util.Log
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
-fun SongsScreen(navController: NavHostController) {
+fun SongsScreen(navController: NavHostController, musicPlayerCore: MusicPlayerCore) {
     val context = LocalContext.current
     var showMenu by remember { mutableStateOf(false) }
     var isListMode by remember { mutableStateOf(true) }
     val scanner = remember { MusicScanner(context) }
     val coroutineScope = rememberCoroutineScope()
     val tracks = remember { mutableStateListOf<MusicTrack>() }
-    val musicPlayerCore = remember { MusicPlayerCore(context) }
     var navigateToPlayer by remember { mutableStateOf<MusicTrack?>(null) }
     var isControllerReady by remember{mutableStateOf(false)}
 
 
-    // Set a callback for when the controller is ready
-    musicPlayerCore.controllerReadyCallback = {
-        isControllerReady = true
-        Log.d("SongsScreen","Controller is ready callback")
-        if(navigateToPlayer!= null){
-            Log.d("SongsScreen", "Navigating to player with track: ${navigateToPlayer?.title}")
-            musicPlayerCore.setMedia(navigateToPlayer!!)
-            musicPlayerCore.playlistManager.addTrack(navigateToPlayer!!)
-            navigateToPlayer = null
-            navController.navigate(Screen.Player.route)
-            Log.d("SongsScreen", "Navigation done")
+    LaunchedEffect(Unit){
+        musicPlayerCore.controllerReadyCallback = {
+            isControllerReady = true
+            Log.d("SongsScreen","Controller is ready callback")
+            if(navigateToPlayer!= null){
+                Log.d("SongsScreen", "Navigating to player with track: ${navigateToPlayer?.title}")
+                musicPlayerCore.setMedia(navigateToPlayer!!)
+                musicPlayerCore.playlistManager.addTrack(navigateToPlayer!!)
+                navigateToPlayer = null
+                navController.navigate(Screen.Player.route)
+                Log.d("SongsScreen", "Navigation done")
+            }
         }
     }
 
@@ -138,25 +138,25 @@ fun SongsScreen(navController: NavHostController) {
                         SongList(tracks = tracks, onClick = { track ->
                             Log.d("SongsScreen", "Song clicked: ${track.title}, isControllerReady: $isControllerReady")
                             if (isControllerReady) {
-                                musicPlayerCore.setMedia(track)
-                                musicPlayerCore.playlistManager.addTrack(track)
-                                navigateToPlayer = null
-                                navController.navigate(Screen.Player.route)
-                            }else{
-                                navigateToPlayer = track
-                            }
+                                    musicPlayerCore.setMedia(track)
+                                    musicPlayerCore.playlistManager.addTrack(track)
+                                    navigateToPlayer = null
+                                    navController.navigate(Screen.Player.route)
+                                } else {
+                                    navigateToPlayer = track
+                                }
                         })
                     } else {
                         SongGrid(tracks = tracks, onClick = { track ->
                             Log.d("SongsScreen", "Song clicked: ${track.title}, isControllerReady: $isControllerReady")
                             if (isControllerReady) {
-                                musicPlayerCore.setMedia(track)
-                                musicPlayerCore.playlistManager.addTrack(track)
-                                navigateToPlayer = null
-                                navController.navigate(Screen.Player.route)
-                            }else{
-                                navigateToPlayer = track
-                            }
+                                    musicPlayerCore.setMedia(track)
+                                    musicPlayerCore.playlistManager.addTrack(track)
+                                    navigateToPlayer = null
+                                    navController.navigate(Screen.Player.route)
+                                } else {
+                                    navigateToPlayer = track
+                                }
                         })
                     }
                 }

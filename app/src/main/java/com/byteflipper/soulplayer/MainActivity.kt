@@ -23,6 +23,7 @@ import com.byteflipper.soulplayer.navigation.AppNavigation
 import com.byteflipper.soulplayer.navigation.BottomNavigationBar
 import com.byteflipper.soulplayer.ui.theme.SoulPlayerTheme
 import com.byteflipper.soulplayer.viewmodel.AppViewModel
+import com.byteflipper.soulplayer.core.MusicPlayerCore
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
             val theme by viewModel.theme.collectAsState()
             val dynamicColor by viewModel.dynamicColor.collectAsState()
             val context = LocalContext.current
+            val musicPlayerCore = remember { MusicPlayerCore(context) }
 
             SoulPlayerTheme(
                 dynamicColor = dynamicColor,
@@ -60,7 +62,7 @@ class MainActivity : ComponentActivity() {
                                 .padding(innerPadding)
                                 .fillMaxSize()
                         ) {
-                            AppNavigation(navController = navController)
+                            AppNavigation(navController = navController, musicPlayerCore = musicPlayerCore)
                         }
                     }
                 }

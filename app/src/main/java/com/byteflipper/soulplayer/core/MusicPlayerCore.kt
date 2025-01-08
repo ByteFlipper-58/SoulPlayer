@@ -22,6 +22,7 @@ class MusicPlayerCore(private val context: Context) {
     var controllerReadyCallback: (() -> Unit)? = null
     private val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
     val playlistManager = PlaylistManager()
+    private var isControllerReady = false
 
     private val controllerConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -32,6 +33,7 @@ class MusicPlayerCore(private val context: Context) {
                 try {
                     mediaController = controllerFuture.get()
                     serviceBound = true
+                    isControllerReady = true
                     Log.d("MusicPlayerCore", "Controller ready")
                     controllerReadyCallback?.invoke()
                 } catch (e: Exception) {
@@ -56,6 +58,10 @@ class MusicPlayerCore(private val context: Context) {
     }
     fun setMedia(track: MusicTrack) {
         Log.d("MusicPlayerCore", "Setting media for track: ${track.title}")
+        if (!isControllerReady) {
+            Log.e("MusicPlayerCore", "MediaController is not ready when setMedia is called")
+            return
+        }
         if (mediaController == null) {
             Log.e("MusicPlayerCore", "MediaController is null when setMedia is called")
             return
@@ -78,6 +84,10 @@ class MusicPlayerCore(private val context: Context) {
 
     fun setPlaylistUris(uris: List<String>) {
         Log.d("MusicPlayerCore", "Setting playlist with uris: $uris")
+        if (!isControllerReady) {
+            Log.e("MusicPlayerCore", "MediaController is not ready when setPlaylist is called")
+            return
+        }
         if (mediaController == null) {
             Log.e("MusicPlayerCore", "MediaController is null when setPlaylist is called")
             return
@@ -94,6 +104,10 @@ class MusicPlayerCore(private val context: Context) {
     }
 
     fun play() {
+        if (!isControllerReady) {
+            Log.e("MusicPlayerCore", "MediaController is not ready when play is called")
+            return
+        }
         if (mediaController == null) {
             Log.e("MusicPlayerCore", "MediaController is null when play is called")
             return
@@ -107,6 +121,10 @@ class MusicPlayerCore(private val context: Context) {
     }
 
     fun pause() {
+        if (!isControllerReady) {
+            Log.e("MusicPlayerCore", "MediaController is not ready when pause is called")
+            return
+        }
         if (mediaController == null) {
             Log.e("MusicPlayerCore", "MediaController is null when pause is called")
             return
@@ -116,6 +134,10 @@ class MusicPlayerCore(private val context: Context) {
     }
 
     fun stop() {
+        if (!isControllerReady) {
+            Log.e("MusicPlayerCore", "MediaController is not ready when stop is called")
+            return
+        }
         if (mediaController == null) {
             Log.e("MusicPlayerCore", "MediaController is null when stop is called")
             return
@@ -131,6 +153,10 @@ class MusicPlayerCore(private val context: Context) {
 
 
     fun seekTo(position: Long) {
+        if (!isControllerReady) {
+            Log.e("MusicPlayerCore", "MediaController is not ready when seekTo is called")
+            return
+        }
         if (mediaController == null) {
             Log.e("MusicPlayerCore", "MediaController is null when seekTo is called")
             return

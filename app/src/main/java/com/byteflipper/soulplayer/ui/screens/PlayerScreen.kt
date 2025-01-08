@@ -55,6 +55,7 @@ fun PlayerScreen(navController: NavHostController){
     val viewModel: AppViewModel = viewModel(factory = AppViewModel.AppViewModelFactory(context.applicationContext as android.app.Application))
     val musicPlayerCore = remember { MusicPlayerCore(context) }
     val progressManager = remember { ProgressManager(musicPlayerCore) }
+    var isControllerReady by remember { mutableStateOf(false) }
 
     var currentProgress by remember { mutableStateOf(0f) }
     val isPlaying = remember { mutableStateOf(false) }
@@ -63,6 +64,9 @@ fun PlayerScreen(navController: NavHostController){
 
 
     DisposableEffect(Unit) {
+        musicPlayerCore.controllerReadyCallback = {
+            isControllerReady = true
+        }
         onDispose {
             musicPlayerCore.release()
         }
@@ -147,12 +151,14 @@ fun PlayerScreen(navController: NavHostController){
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
-                            if (musicPlayerCore.isPlaying()) {
-                                musicPlayerCore.pause()
-                                isPlaying.value = musicPlayerCore.isPlaying()
-                            } else {
-                                musicPlayerCore.play()
-                                isPlaying.value = musicPlayerCore.isPlaying()
+                            if(isControllerReady){
+                                if (musicPlayerCore.isPlaying()) {
+                                    musicPlayerCore.pause()
+                                    isPlaying.value = musicPlayerCore.isPlaying()
+                                } else {
+                                    musicPlayerCore.play()
+                                    isPlaying.value = musicPlayerCore.isPlaying()
+                                }
                             }
                         }
                     }

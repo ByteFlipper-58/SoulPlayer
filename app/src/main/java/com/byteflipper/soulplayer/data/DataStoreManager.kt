@@ -35,7 +35,7 @@ class DataStoreManager(private val context: Context) {
         save(PreferencesKeys.THEME_KEY, theme)
     }
 
-    fun getTheme() = read(PreferencesKeys.THEME_KEY, "system") // "system", "light", "dark"
+    fun getTheme() = read(PreferencesKeys.THEME_KEY, "system")
 
     suspend fun setDynamicColor(dynamicColor: Boolean) {
         save(PreferencesKeys.DYNAMIC_COLOR_KEY, dynamicColor)

@@ -1,4 +1,3 @@
-// app/src/main/java/com/byteflipper/soulplayer/ui/screens/SongsScreen.kt
 package com.byteflipper.soulplayer.ui.screens
 
 import androidx.compose.animation.AnimatedContent
@@ -20,23 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -63,24 +47,18 @@ fun SongsScreen(navController: NavHostController, musicPlayerCore: MusicPlayerCo
     val coroutineScope = rememberCoroutineScope()
     val tracks = remember { mutableStateListOf<MusicTrack>() }
     var navigateToPlayer by remember { mutableStateOf<MusicTrack?>(null) }
-    var isControllerReady by remember{mutableStateOf(false)}
+    val isControllerReady by musicPlayerCore.isControllerReady.collectAsState()
 
-
-    LaunchedEffect(Unit){
-        musicPlayerCore.controllerReadyCallback = {
-            isControllerReady = true
-            Log.d("SongsScreen","Controller is ready callback")
-            if(navigateToPlayer!= null){
-                Log.d("SongsScreen", "Navigating to player with track: ${navigateToPlayer?.title}")
-                musicPlayerCore.setMedia(navigateToPlayer!!)
-                musicPlayerCore.playlistManager.addTrack(navigateToPlayer!!)
-                navigateToPlayer = null
-                navController.navigate(Screen.Player.route)
-                Log.d("SongsScreen", "Navigation done")
-            }
+    // Handle navigation when controller becomes ready
+    LaunchedEffect(isControllerReady, navigateToPlayer) {
+        if (isControllerReady && navigateToPlayer != null) {
+            Log.d("SongsScreen", "Controller ready and have track to play: ${navigateToPlayer?.title}")
+            musicPlayerCore.setMedia(navigateToPlayer!!)
+            musicPlayerCore.playlistManager.addTrack(navigateToPlayer!!)
+            navigateToPlayer = null
+            navController.navigate(Screen.Player.route)
         }
     }
-
 
     DisposableEffect(Unit) {
         coroutineScope.launch {
@@ -90,6 +68,7 @@ fun SongsScreen(navController: NavHostController, musicPlayerCore: MusicPlayerCo
             musicPlayerCore.release()
         }
     }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -125,38 +104,38 @@ fun SongsScreen(navController: NavHostController, musicPlayerCore: MusicPlayerCo
             if (tracks.isEmpty()) {
                 Text("No songs found")
             } else {
-                AnimatedContent(targetState = isListMode,
+                AnimatedContent(
+                    targetState = isListMode,
                     transitionSpec = {
                         if (targetState) {
                             scaleIn() + fadeIn() togetherWith scaleOut() + fadeOut()
                         } else {
                             scaleIn() + fadeIn() togetherWith scaleOut() + fadeOut()
                         }.using(SizeTransform(clip = false))
-                    }, label = "layout_animation"
+                    },
+                    label = "layout_animation"
                 ) { targetState ->
                     if (targetState) {
                         SongList(tracks = tracks, onClick = { track ->
                             Log.d("SongsScreen", "Song clicked: ${track.title}, isControllerReady: $isControllerReady")
                             if (isControllerReady) {
-                                    musicPlayerCore.setMedia(track)
-                                    musicPlayerCore.playlistManager.addTrack(track)
-                                    navigateToPlayer = null
-                                    navController.navigate(Screen.Player.route)
-                                } else {
-                                    navigateToPlayer = track
-                                }
+                                musicPlayerCore.setMedia(track)
+                                musicPlayerCore.playlistManager.addTrack(track)
+                                navController.navigate(Screen.Player.route)
+                            } else {
+                                navigateToPlayer = track
+                            }
                         })
                     } else {
                         SongGrid(tracks = tracks, onClick = { track ->
                             Log.d("SongsScreen", "Song clicked: ${track.title}, isControllerReady: $isControllerReady")
                             if (isControllerReady) {
-                                    musicPlayerCore.setMedia(track)
-                                    musicPlayerCore.playlistManager.addTrack(track)
-                                    navigateToPlayer = null
-                                    navController.navigate(Screen.Player.route)
-                                } else {
-                                    navigateToPlayer = track
-                                }
+                                musicPlayerCore.setMedia(track)
+                                musicPlayerCore.playlistManager.addTrack(track)
+                                navController.navigate(Screen.Player.route)
+                            } else {
+                                navigateToPlayer = track
+                            }
                         })
                     }
                 }
@@ -164,7 +143,6 @@ fun SongsScreen(navController: NavHostController, musicPlayerCore: MusicPlayerCo
         }
     }
 }
-
 
 @Composable
 fun SongList(tracks: List<MusicTrack>, onClick: (MusicTrack) -> Unit) {
@@ -186,6 +164,7 @@ fun SongGrid(tracks: List<MusicTrack>, onClick: (MusicTrack) -> Unit) {
         }
     }
 }
+
 private suspend fun scanMusicAndUpdateList(scanner: MusicScanner, tracks: MutableList<MusicTrack>) {
     val newTracks = withContext(Dispatchers.IO) {
         scanner.scanMusic()

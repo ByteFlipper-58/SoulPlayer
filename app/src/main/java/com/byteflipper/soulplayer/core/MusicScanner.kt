@@ -10,8 +10,13 @@ import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.lang.IllegalArgumentException
 
 data class MusicTrack(
     val data: String,
@@ -45,13 +50,11 @@ class MusicScanner(private val context: Context) {
             MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media._ID
         )
-
         val selection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             "${MediaStore.Audio.Media.IS_MUSIC} != 0 AND ${MediaStore.Audio.Media.MIME_TYPE} IN (${SUPPORTED_MIME_TYPES.joinToString { "?" }})"
         } else {
             "${MediaStore.Audio.Media.IS_MUSIC} != 0 AND ${MediaStore.Audio.Media.MIME_TYPE} IN (${SUPPORTED_MIME_TYPES.joinToString { "?" }})"
         }
-
         val cursor: Cursor? = context.contentResolver.query(
             uri,
             projection,

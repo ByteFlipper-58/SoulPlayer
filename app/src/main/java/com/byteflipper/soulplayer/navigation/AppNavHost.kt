@@ -9,8 +9,19 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.byteflipper.soulplayer.ui.albumdetails.AlbumDetailsScreen
+import com.byteflipper.soulplayer.ui.albums.AlbumsScreen
+import com.byteflipper.soulplayer.ui.artistdetails.ArtistDetailsScreen
+import com.byteflipper.soulplayer.ui.artists.ArtistsScreen
 import com.byteflipper.soulplayer.ui.home.HomeScreen
+import com.byteflipper.soulplayer.ui.library.LibraryScreen
+import com.byteflipper.soulplayer.ui.nowplaying.NowPlayingScreen
+import com.byteflipper.soulplayer.ui.playlistdetails.PlaylistDetailsScreen
+import com.byteflipper.soulplayer.ui.playlists.PlaylistsScreen
+import com.byteflipper.soulplayer.ui.search.SearchScreen
 import com.byteflipper.soulplayer.ui.settings.SettingsScreen
+import com.byteflipper.soulplayer.ui.songs.SongsScreen
+
 
 @Composable
 fun AppNavHost(
@@ -24,54 +35,35 @@ fun AppNavHost(
         modifier = modifier
     ) {
         composable(AppScreens.Home.route) { HomeScreen(navController) }
-        composable(AppScreens.Songs.route) { SongsScreenPlaceholder(navController) }
-        composable(AppScreens.Artists.route) { ArtistsScreenPlaceholder(navController) }
-        composable(AppScreens.Albums.route) { AlbumsScreenPlaceholder(navController) }
-        composable(AppScreens.Playlists.route) { PlaylistsScreenPlaceholder(navController) }
-        composable(AppScreens.Search.route) { com.byteflipper.soulplayer.ui.search.SearchScreen(navController) }
+        composable(AppScreens.Library.route) { LibraryScreen() }
+        composable(AppScreens.Songs.route) { SongsScreen() }
+        composable(AppScreens.Artists.route) { ArtistsScreen() }
+        composable(AppScreens.Albums.route) { AlbumsScreen() }
+        composable(AppScreens.Playlists.route) { PlaylistsScreen() }
+        composable(AppScreens.Search.route) { SearchScreen(navController) }
         composable(AppScreens.Settings.route) { SettingsScreen(navController) }
-        composable(AppScreens.NowPlaying.route) { NowPlayingScreenPlaceholder(navController) }
+        composable(AppScreens.NowPlaying.route) { NowPlayingScreen() }
 
         composable(
             route = AppScreens.ArtistDetails.route,
             arguments = AppScreens.ArtistDetails.arguments
         ) { backStackEntry ->
             val artistId = backStackEntry.arguments?.getString(AppScreens.ArtistDetails.ARG_ID)
-            ArtistDetailsScreenPlaceholder(navController, artistId)
+            ArtistDetailsScreen(artistId = artistId)
         }
         composable(
             route = AppScreens.AlbumDetails.route,
             arguments = AppScreens.AlbumDetails.arguments
         ) { backStackEntry ->
             val albumId = backStackEntry.arguments?.getString(AppScreens.AlbumDetails.ARG_ID)
-            AlbumDetailsScreenPlaceholder(navController, albumId)
+            AlbumDetailsScreen(albumId = albumId)
         }
         composable(
             route = AppScreens.PlaylistDetails.route,
             arguments = AppScreens.PlaylistDetails.arguments
         ) { backStackEntry ->
             val playlistId = backStackEntry.arguments?.getString(AppScreens.PlaylistDetails.ARG_ID)
-            PlaylistDetailsScreenPlaceholder(navController, playlistId)
+            PlaylistDetailsScreen(playlistId = playlistId)
         }
     }
 }
-
-// --- Заглушки для экранов ---
-// В будущем их нужно будет вынести в отдельные файлы/модули
-
-@Composable
-fun PlaceholderScreen(screenName: String, navController: NavHostController, id: String? = null) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "$screenName ${id?.let { "(ID: $it)" } ?: ""}")
-    }
-    // TODO: Реализовать реальные экраны
-}
-
-@Composable fun SongsScreenPlaceholder(navController: NavHostController) = PlaceholderScreen("Songs", navController)
-@Composable fun ArtistsScreenPlaceholder(navController: NavHostController) = PlaceholderScreen("Artists", navController)
-@Composable fun AlbumsScreenPlaceholder(navController: NavHostController) = PlaceholderScreen("Albums", navController)
-@Composable fun PlaylistsScreenPlaceholder(navController: NavHostController) = PlaceholderScreen("Playlists", navController)
-@Composable fun NowPlayingScreenPlaceholder(navController: NavHostController) = PlaceholderScreen("Now Playing", navController)
-@Composable fun ArtistDetailsScreenPlaceholder(navController: NavHostController, artistId: String?) = PlaceholderScreen("Artist Details", navController, artistId)
-@Composable fun AlbumDetailsScreenPlaceholder(navController: NavHostController, albumId: String?) = PlaceholderScreen("Album Details", navController, albumId)
-@Composable fun PlaylistDetailsScreenPlaceholder(navController: NavHostController, playlistId: String?) = PlaceholderScreen("Playlist Details", navController, playlistId)

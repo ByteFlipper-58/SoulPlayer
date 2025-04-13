@@ -1,0 +1,41 @@
+<resources>
+    <string name="app_name">Soul Player</string>
+
+    <!-- Screen Titles (used in AppBar and Navigation) -->
+    <string name="screen_home">Главная</string>
+    <string name="screen_library">Медиатека</string>
+    <string name="screen_songs">Песни</string>
+    <string name="screen_artists">Артисты</string>
+    <string name="screen_albums">Альбомы</string>
+    <string name="screen_playlists">Плейлисты</string>
+    <string name="screen_search">Поиск</string>
+    <string name="screen_settings">Настройки</string>
+    <string name="screen_now_playing">Сейчас играет</string>
+    <string name="screen_artist_details">Артист</string>
+    <string name="screen_album_details">Альбом</string>
+    <string name="screen_playlist_details">Плейлист</string>
+
+    <!-- Actions -->
+    <string name="action_search">Поиск</string>
+    <string name="action_settings">Настройки</string>
+
+    <!-- Library Screen -->
+    <string name="library_songs">Все песни</string>
+    <string name="library_artists">Артисты</string>
+    <string name="library_albums">Альбомы</string>
+    <string name="library_playlists">Плейлисты</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_navigation_title">Настройки навигации</string>
+    <string name="settings_navigation_type_label">Тип панели навигации:</string>
+    <string name="settings_navigation_type_bottom">Нижняя панель</string>
+    <string name="settings_navigation_type_tabs">Вкладки</string>
+
+    <!-- Home Screen -->
+    <string name="home_placeholder_description">Здесь будут рекомендации, недавно прослушанные и избранные треки.</string>
+
+    <!-- Search Screen -->
+    <string name="search_hint">Поиск по медиатеке</string>
+    <string name="search_placeholder_results">Здесь будут результаты поиска.</string>
+
+</resources>

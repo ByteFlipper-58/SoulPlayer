@@ -46,6 +46,23 @@
             </intent-filter>
         </service>
 
+        <!-- Объявление PlaybackService (Media3) -->
+        <service
+            android:name=".player.media3.PlaybackService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService"/>
+                <action android:name="android.media.browse.MediaBrowserService"/> <!-- Для совместимости -->
+            </intent-filter>
+        </service>
+
     </application>
+
+    <!-- Разрешение на чтение аудиофайлов (Android 13+) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+    <!-- Разрешение на чтение внешнего хранилища (для версий ниже Android 13) -->
+    <!-- maxSdkVersion нужен, чтобы это разрешение не запрашивалось на Android 13+ -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
 
 </manifest>

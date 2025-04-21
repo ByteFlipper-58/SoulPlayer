@@ -15,9 +15,20 @@
     <string name="screen_album_details">Альбом</string>
     <string name="screen_playlist_details">Плейлист</string>
 
+    <!-- Songs Screen -->
+    <string name="no_songs_found">Песни не найдены</string>
+
     <!-- Actions -->
     <string name="action_search">Поиск</string>
     <string name="action_settings">Настройки</string>
+    <string name="action_previous">Предыдущий трек</string>
+    <string name="action_play">Воспроизвести</string>
+    <string name="action_pause">Пауза</string>
+    <string name="action_next">Следующий трек</string>
+
+    <!-- Now Playing Screen -->
+    <string name="not_playing">Ничего не играет</string>
+    <string name="album_art_content_description">Обложка альбома</string>
 
     <!-- Library Screen -->
     <string name="library_songs">Все песни</string>

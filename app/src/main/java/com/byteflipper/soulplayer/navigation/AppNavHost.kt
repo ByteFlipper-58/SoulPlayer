@@ -36,7 +36,7 @@ fun AppNavHost(
     ) {
         composable(AppScreens.Home.route) { HomeScreen(navController) }
         composable(AppScreens.Library.route) { LibraryScreen() }
-        composable(AppScreens.Songs.route) { SongsScreen() }
+        composable(AppScreens.Songs.route) { SongsScreen(navController) } // Передаем navController
         composable(AppScreens.Artists.route) { ArtistsScreen() }
         composable(AppScreens.Albums.route) { AlbumsScreen() }
         composable(AppScreens.Playlists.route) { PlaylistsScreen() }

@@ -1,13 +1,12 @@
-package com.byteflipper.soulplayer.navigation // Обновлено имя пакета
+package com.byteflipper.soulplayer.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.byteflipper.soulplayer.R // Обновлен импорт R
+import com.byteflipper.soulplayer.R
 
-// Определяем все экраны приложения и их маршруты
 sealed interface AppScreens {
     val route: String
     @get:StringRes val titleResId: Int
@@ -117,7 +116,6 @@ sealed interface AppScreens {
 }
 
 // Список экранов для нижней навигации или вкладок
-// Теперь titleResId и icon берутся из самих объектов AppScreens
 val mainNavigationItems = listOf(
     AppScreens.Home,
     AppScreens.Songs,

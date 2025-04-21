@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import com.byteflipper.soulplayer.data.Song // Используем существующий Song из app
+import com.byteflipper.soulplayer.data.Song
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -44,7 +44,7 @@ class MediaStoreSongScanner @Inject constructor(
         context.contentResolver.query(
             collection,
             projection,
-            selection, // Используем selection для фильтрации
+            selection,
             null, // selectionArgs не нужны, так как нет плейсхолдеров в selection
             sortOrder
         )?.use { cursor ->
@@ -70,7 +70,7 @@ class MediaStoreSongScanner @Inject constructor(
                 )
 
                 songs.add(
-                    Song( // Используем конструктор Song из app.data
+                    Song(
                         id = id,
                         title = title ?: "Unknown Title",
                         artist = artist ?: "Unknown Artist",
@@ -78,7 +78,7 @@ class MediaStoreSongScanner @Inject constructor(
                         duration = duration,
                         data = data ?: "",
                         albumId = albumId,
-                        contentUri = contentUri // Убедимся, что поле contentUri есть в app.data.Song
+                        contentUri = contentUri
                     )
                 )
             }
